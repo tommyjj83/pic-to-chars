@@ -42,6 +42,11 @@ public class PicToChars {
     }
 
 
+    public void printImage() {
+        System.out.print(mOutput.toString());
+    }
+
+
     private int getNumberOfAggregatedPixels() {
         int base = Math.min(mImage.getWidth(), mImage.getHeight());
         int unit = (int) Math.floor(base / 100.0);

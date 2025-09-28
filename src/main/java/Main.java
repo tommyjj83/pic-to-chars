@@ -12,6 +12,7 @@ public class Main {
             BufferedImage image = ImageReader.loadImage(file[0]);
             PicToChars converter = new PicToChars(image, output_quality[0]);
             converter.convertImageToChars();
+            converter.printImage();
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
             return;
