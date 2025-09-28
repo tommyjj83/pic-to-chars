@@ -3,7 +3,8 @@ import java.awt.image.BufferedImage;
 public class PicToChars {
     public static final int QUALITY_MIN = 1;
     public static final int QUALITY_MAX = 100;
-    private final String CHAR_GREY_SCALE = " .:-=+*#%@";
+    private static final String CHAR_GREY_SCALE = " .:-=+*#%@";
+    private static final double INTENSITY_SCALE_PART = 255.0 / CHAR_GREY_SCALE.length();
 
     private final int mOutputQuality;
     private final int mAggregatedPixels;
@@ -25,8 +26,18 @@ public class PicToChars {
 
         for (int rowIdx = 0; rowIdx < outputHeight; rowIdx++) {
             for (int columnIdx = 0; columnIdx < outputWidth; columnIdx++) {
+                double pixelGroupIntensity = getPixelGroupIntensity(rowIdx, columnIdx);
+                int intensityGroup;
+                if (pixelGroupIntensity >= 255) {
+                    intensityGroup = CHAR_GREY_SCALE.length() - 1;
+                } else {
+                    intensityGroup = (int)(pixelGroupIntensity / INTENSITY_SCALE_PART);
+                }
 
+                mOutput.append(CHAR_GREY_SCALE.charAt(intensityGroup));
             }
+
+            mOutput.append("\n");
         }
     }
 
@@ -44,6 +55,16 @@ public class PicToChars {
     }
 
 
+    private int[] getRBGValues(int pixel) {
+        int[] RGB = new int[3];
+        RGB[0] = (pixel >> 16) & 0xFF;
+        RGB[1] = (pixel >> 8) & 0xFF;
+        RGB[2] = (pixel) & 0xFF;
+
+        return RGB;
+    }
+
+
     private double getPixelGroupIntensity(int outputRow, int outputColumn) {
         int row = outputRow * mAggregatedPixels;
         int column = outputColumn * mAggregatedPixels;
@@ -53,10 +74,8 @@ public class PicToChars {
 
         double sum = 0;
         for (int pixel : pixels) {
-            int R = (pixel >> 16) & 0xFF;
-            int G = (pixel >> 8) & 0xFF;
-            int B = pixel & 0xFF;
-            sum += getPixelIntensity(R, G, B);
+            int[] RGB = getRBGValues(pixel);
+            sum += getPixelIntensity(RGB[0], RGB[1], RGB[2]);
         }
 
         return sum / (mAggregatedPixels *  mAggregatedPixels);
