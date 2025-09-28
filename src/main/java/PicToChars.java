@@ -7,7 +7,7 @@ public class PicToChars {
     private static final double INTENSITY_SCALE_PART = 255.0 / CHAR_GREY_SCALE.length();
 
     private final int mOutputQuality;
-    private final int mAggregatedPixels;
+    private final int mPixelGroupSize;
     private final BufferedImage mImage;
     private StringBuilder mOutput = null;
 
@@ -15,13 +15,13 @@ public class PicToChars {
     PicToChars(BufferedImage image, int outputQuality) {
         mImage = image;
         mOutputQuality = outputQuality;
-        mAggregatedPixels = getNumberOfAggregatedPixels();
+        mPixelGroupSize = calculatePixelGroupSize();
     }
 
 
     public void convertImageToChars() {
-        int outputWidth = mImage.getWidth() /  mAggregatedPixels;
-        int outputHeight = mImage.getHeight() /  mAggregatedPixels;
+        int outputWidth = mImage.getWidth() /  mPixelGroupSize;
+        int outputHeight = mImage.getHeight() /  mPixelGroupSize;
         mOutput = new StringBuilder(outputWidth * outputHeight + outputHeight);
 
         for (int rowIdx = 0; rowIdx < outputHeight; rowIdx++) {
@@ -47,7 +47,7 @@ public class PicToChars {
     }
 
 
-    private int getNumberOfAggregatedPixels() {
+    private int calculatePixelGroupSize() {
         int base = Math.min(mImage.getWidth(), mImage.getHeight());
         int unit = (int) Math.floor(base / 100.0);
         int coefficient = (100 - mOutputQuality) + 1;
@@ -71,11 +71,11 @@ public class PicToChars {
 
 
     private double getPixelGroupIntensity(int outputRow, int outputColumn) {
-        int row = outputRow * mAggregatedPixels;
-        int column = outputColumn * mAggregatedPixels;
+        int row = outputRow * mPixelGroupSize;
+        int column = outputColumn * mPixelGroupSize;
 
-        int[] pixels = new int[mAggregatedPixels * mAggregatedPixels];
-        mImage.getRGB(row, column, mAggregatedPixels, mAggregatedPixels, pixels, 0, mAggregatedPixels);
+        int[] pixels = new int[mPixelGroupSize * mPixelGroupSize];
+        mImage.getRGB(row, column, mPixelGroupSize, mPixelGroupSize, pixels, 0, mPixelGroupSize);
 
         double sum = 0;
         for (int pixel : pixels) {
@@ -83,6 +83,6 @@ public class PicToChars {
             sum += getPixelIntensity(RGB[0], RGB[1], RGB[2]);
         }
 
-        return sum / (mAggregatedPixels *  mAggregatedPixels);
+        return sum / (mPixelGroupSize *  mPixelGroupSize);
     }
 }
