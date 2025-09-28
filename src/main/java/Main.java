@@ -4,7 +4,7 @@ public class Main {
     public static void main(String[] args) {
         int[] output_quality = {0};
         String[] file = {""};
-        if (validateArgs(args, file, output_quality)) {
+        if (!validateArgs(args, file, output_quality)) {
             return;
         }
 
