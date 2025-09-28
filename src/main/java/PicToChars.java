@@ -20,8 +20,8 @@ public class PicToChars {
 
 
     public void convertImageToChars() {
-        int outputWidth = mImage.getWidth() /  mPixelGroupSize;
-        int outputHeight = mImage.getHeight() /  mPixelGroupSize;
+        int outputWidth = mImage.getWidth() / mPixelGroupSize;
+        int outputHeight = mImage.getHeight() / mPixelGroupSize;
         mOutput = new StringBuilder(outputWidth * outputHeight + outputHeight);
 
         for (int rowIdx = 0; rowIdx < outputHeight; rowIdx++) {
@@ -49,9 +49,10 @@ public class PicToChars {
 
     private int calculatePixelGroupSize() {
         int base = Math.min(mImage.getWidth(), mImage.getHeight());
-        int unit = (int) Math.floor(base / 100.0);
+        double unit = base / 100.0;
         int coefficient = (100 - mOutputQuality) + 1;
-        return unit * coefficient;
+
+        return (int)Math.floor(unit * coefficient);
     }
 
 
