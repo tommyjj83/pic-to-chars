@@ -76,7 +76,7 @@ public class PicToChars {
         int column = outputColumn * mPixelGroupSize;
 
         int[] pixels = new int[mPixelGroupSize * mPixelGroupSize];
-        mImage.getRGB(row, column, mPixelGroupSize, mPixelGroupSize, pixels, 0, mPixelGroupSize);
+        mImage.getRGB(column, row, mPixelGroupSize, mPixelGroupSize, pixels, 0, mPixelGroupSize);
 
         double sum = 0;
         for (int pixel : pixels) {
