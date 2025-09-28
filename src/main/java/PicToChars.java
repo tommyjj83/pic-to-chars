@@ -6,18 +6,21 @@ public class PicToChars {
     private final String CHAR_GREY_SCALE = " .:-=+*#%@";
 
     private final int mOutputQuality;
+    private final int mAggregatedPixels;
     private final BufferedImage mImage;
     private StringBuilder mOutput = null;
+
 
     PicToChars(BufferedImage image, int outputQuality) {
         mImage = image;
         mOutputQuality = outputQuality;
+        mAggregatedPixels = getNumberOfAggregatedPixels();
     }
 
+
     public void convertImageToChars() {
-        int aggregatedPixels = getNumberOfAggregatedPixels();
-        int outputWidth = mImage.getWidth() /  aggregatedPixels;
-        int outputHeight = mImage.getHeight() /  aggregatedPixels;
+        int outputWidth = mImage.getWidth() /  mAggregatedPixels;
+        int outputHeight = mImage.getHeight() /  mAggregatedPixels;
         mOutput = new StringBuilder(outputWidth * outputHeight + outputHeight);
 
         for (int rowIdx = 0; rowIdx < outputHeight; rowIdx++) {
@@ -38,5 +41,24 @@ public class PicToChars {
 
     private double getPixelIntensity(int R, int G, int B) {
         return (0.2126 * R + 0.7152 * G + 0.0722 * B);
+    }
+
+
+    private double getPixelGroupIntensity(int outputRow, int outputColumn) {
+        int row = outputRow * mAggregatedPixels;
+        int column = outputColumn * mAggregatedPixels;
+
+        int[] pixels = new int[mAggregatedPixels * mAggregatedPixels];
+        mImage.getRGB(row, column, mAggregatedPixels, mAggregatedPixels, pixels, 0, mAggregatedPixels);
+
+        double sum = 0;
+        for (int pixel : pixels) {
+            int R = (pixel >> 16) & 0xFF;
+            int G = (pixel >> 8) & 0xFF;
+            int B = pixel & 0xFF;
+            sum += getPixelIntensity(R, G, B);
+        }
+
+        return sum / (mAggregatedPixels *  mAggregatedPixels);
     }
 }
